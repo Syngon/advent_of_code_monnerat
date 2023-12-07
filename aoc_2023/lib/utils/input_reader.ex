@@ -7,7 +7,7 @@ defmodule Aoc2023.InputReader do
   def read_input!(module) do
     day = module |> Module.split() |> List.last() |> String.downcase()
 
-    file_name = "../inputs/day_#{day}.txt"
+    file_name = "../#{day}/input.txt"
     path = Path.expand(file_name, __DIR__)
     File.read!(path)
   end
