@@ -1,4 +1,4 @@
-defmodule Aoc2023.One do
+defmodule Aoc2023.OneSolution do
   @moduledoc false
   alias Aoc2023.InputReader
   alias Aoc2023.OneHelper

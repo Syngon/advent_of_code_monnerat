@@ -5,7 +5,12 @@ defmodule Aoc2023.InputReader do
   """
   @spec read_input!(module) :: binary
   def read_input!(module) do
-    day = module |> Module.split() |> List.last() |> String.downcase()
+    day =
+      module
+      |> Module.split()
+      |> List.last()
+      |> String.replace("Solution", "")
+      |> String.downcase()
 
     file_name = "../#{day}/input.txt"
     path = Path.expand(file_name, __DIR__)
