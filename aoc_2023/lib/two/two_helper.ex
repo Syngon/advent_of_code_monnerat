@@ -33,11 +33,7 @@ defmodule Aoc2023.TwoHelper do
     games_subsets =
       games_sets
       |> Enum.map(&String.split(&1, ", ", trim: true))
-      |> Enum.map(fn set ->
-        set
-        |> Enum.map(&String.split(&1, " ", trim: true))
-        |> Enum.map(fn [number, color] -> {String.to_integer(number), color} end)
-      end)
+      |> Enum.map(&set_to_tuple/1)
 
     {game, games_subsets}
   end
@@ -56,5 +52,57 @@ defmodule Aoc2023.TwoHelper do
       "green" -> number <= @max_green
       "blue" -> number <= @max_blue
     end
+  end
+
+  defp set_to_tuple(set) do
+    set
+    |> Enum.map(&String.split(&1, " ", trim: true))
+    |> Enum.map(fn [number, color] -> {String.to_integer(number), color} end)
+  end
+
+  def get_max_cubes_from_each_game({game, games_subsets}) do
+    max_cubes_from_each_game =
+      games_subsets
+      |> Enum.map(&String.split(&1, ", ", trim: true))
+      |> Enum.map(&set_to_tuple/1)
+      |> Enum.map(&get_max_cubes_from_each_subset/1)
+      |> Enum.reduce(%{}, fn subset, acc ->
+        blue = Map.get(subset, "blue", 0)
+        green = Map.get(subset, "green", 0)
+        red = Map.get(subset, "red", 0)
+
+        acc
+        |> maybe_add_value(blue, "blue")
+        |> maybe_add_value(green, "green")
+        |> maybe_add_value(red, "red")
+      end)
+
+    {game, max_cubes_from_each_game}
+  end
+
+  defp get_max_cubes_from_each_subset(subset) do
+    Enum.reduce(subset, %{}, fn {number, color}, acc ->
+      case Map.get(acc, color) do
+        nil -> Map.put(acc, color, number)
+        _ -> acc
+      end
+    end)
+  end
+
+  defp maybe_add_value(acc, color_value, color_name) do
+    if Map.get(acc, color_name, 0) < color_value do
+      Map.put(acc, color_name, color_value)
+    else
+      acc
+    end
+  end
+
+  def multiply_cubes({game, max_cubes_from_each_game}) do
+    values =
+      max_cubes_from_each_game
+      |> Map.values()
+      |> Enum.reduce(1, fn value, acc -> acc * value end)
+
+    {game, values}
   end
 end
